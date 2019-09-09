@@ -1,0 +1,16 @@
+#BlueJ class context
+comment0.target=Human
+comment0.text=\r\n\ For\ human\ players.\r\n\ Have\ typical\ attributes\ &\ behaviours\ for\ Human\ player\r\n\ @author\ Leo\r\n\ @version\ 13.03.2018\r\n
+comment1.params=
+comment1.target=Human()
+comment2.params=name
+comment2.target=Human(java.lang.String)
+comment3.params=abandonNum
+comment3.target=void\ setHumanAbandonNum(int)
+comment4.params=
+comment4.target=int\ getHumanAbandonNum()
+comment5.params=flag
+comment5.target=void\ setInRangeInputFlag(boolean)
+comment6.params=
+comment6.target=boolean\ getInRangeInputFlag()
+numComments=7

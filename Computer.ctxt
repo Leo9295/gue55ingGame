@@ -1,0 +1,11 @@
+#BlueJ class context
+comment0.target=Computer
+comment0.text=\r\n\ For\ computer\ players.\r\n\ Have\ typical\ attributes\ &\ behaviours\ for\ Computer\ player\r\n\ @author\ Leo\r\n\ @version\ 13.03.2018\r\n
+comment1.params=
+comment1.target=Computer()
+comment1.text=\r\n\ Initializing\ the\ detail\ of\ computer\ player\r\n
+comment2.params=abandonNum
+comment2.target=void\ setComputerAbandonNum(int)
+comment3.params=
+comment3.target=int\ getComputerAbandonNum()
+numComments=4

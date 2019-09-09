@@ -1,0 +1,8 @@
+#BlueJ class context
+comment0.target=RandomNumber
+comment1.params=
+comment1.target=RandomNumber()
+comment2.params=minRange\ maxRange
+comment2.target=int\ createNewRandomNumber(int,\ int)
+comment2.text=\r\n\ Depend\ on\ range\ to\ create\ a\ new\ random\ number\r\n\ @param\ The\ range\ of\ random\ number,\ [min,\ max]\r\n\ @return\ randomNum\r\n
+numComments=3

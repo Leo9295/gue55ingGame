@@ -1,0 +1,534 @@
+import java.util.*;
+
+/**
+ * Write a description of class Game here.
+ * 
+ * @author Leo
+ * @version 24.03.2018
+ */
+
+public class Game {
+    // 生成域?
+    private int hiddenNumber; // Hidden number of game(default as "0")
+    private int orderNumber; // To decide who will do the first guess
+    private int rangeMin; // The minimum guessing range
+    private int rangeMax; // The maximum guessing range
+    private int attemptTimes; // The number of guessing times
+
+    // 生成随机数类对象
+    private RandomNumber randomNumber = new RandomNumber();
+    // 生成两个玩家对象
+    private Human humanPlayer;
+    private Computer computerPlayer = new Computer();
+
+    public Game() {}
+
+    /**
+     * 显示欢迎界面
+     */
+    public void displayWelcomScreen() {
+        System.out.println("****************************************");
+        System.out.println("*                                      *");
+        System.out.println("*     Welcome to the Gue55ing Game     *");
+        System.out.println("*                                      *");
+        System.out.println("*    Press ENTER to start the Game     *");
+        System.out.println("*                                      *");
+        System.out.println("****************************************");
+        Scanner input = new Scanner(System.in);
+        input.nextLine();
+    }
+
+    /**
+     * 识别玩家名称
+     */
+    public void indicatePlayersName() {
+        System.out.print("* Please input your name(Bewteen 1-8 characters):");
+        System.out.print("* >");
+        String playerName = indicatePlayersNameImpl();
+        if (playerName.equals("ERROR_INVILD_PLAYERNAME")) {
+            System.out.println("* Your name is invild, Please reenter your name! *");
+            indicatePlayersName();
+        } else {
+            humanPlayer = new Human(playerName); // 初始化人类玩家对�?
+            displayBar();
+            System.out.println("* Welcome Player " + playerName + " to join in the Gue55ing Game!\n");
+            displayBar();
+            System.out.println("* Press Enter for next step: ");
+            Scanner input = new Scanner(System.in);
+        input.nextLine();
+        }
+    }
+
+    /**
+     * 显示玩家详情(Name + Score)
+     * 
+     * @param player
+     */
+    public void displayPlayerDetail(Player player) {
+        System.out.println("The score of " + player.getPlayerName() + " is " + player.getScore());
+    }
+
+    /**
+     * 生成隐藏�?
+     * 
+     * @param 隐藏数范�?
+     */
+    public void createHiddenNumber(int hiddenNumberRange) {
+        hiddenNumber = randomNumber.createNewRandomNumber(hiddenNumberRange);
+    }
+
+    /**
+     * 生成顺序�?
+     * 
+     * @param 顺序数范�?
+     */
+    public void createOrderNumber(int orderNumberRange) {
+        orderNumber = randomNumber.createNewRandomNumber(orderNumberRange);
+    }
+
+    /**
+     * 为玩家决定游戏顺�?
+     */
+    public void chooseOrderForPlayers() {
+        switch (orderNumber) {
+        case (1):
+            System.out.println("* Now is " + humanPlayer.getPlayerName() + "'s turn to guess");
+            break;
+        case (2):
+            System.out.println("* Now is " + computerPlayer.getPlayerName() + "'s turn to guess");
+            break;
+        }
+    }
+
+    /**
+     * 玩家输入数字
+     */
+    public void humanPlayerInputNumber() {
+        int temp = humanPlayerInputNumberImpl(rangeMin, rangeMax);
+        switch (temp){
+        case 0:
+            break;
+        default:
+            humanPlayer.setLastGuessesNum(temp);
+        }
+    }
+
+    /**
+     * 电脑输入数字
+     */
+    public void computerPlayerInputNumber() {
+        int temp = computerPlayerInputNumberImpl(rangeMin, rangeMax);
+        case 0:
+            break;
+        default:
+            computerPlayer.setLastGuessesNum(temp);
+        }
+    }
+
+    /**
+     * 玩家进行猜数步骤
+     * 
+     * @param Player
+     * @return Player
+     */
+    public Player guessNumber(Player player) {
+        // 判断数字是否相等，相等则返回玩家对象（方便下�?步加分操作），否则返回null
+        if (guessNumberImpl(player.getLastGuessesNum(), hiddenNumber))
+            return player;
+        else
+            return null;
+    }
+
+    /**
+     * 显示猜数的范�?
+     */
+    public void displayGuessingRange() {
+        System.out.println("The guessing range is " + rangeMin + " ~ " + rangeMax);
+    }
+
+    /**
+     * 改变猜数范围
+     * 
+     * @param player
+     */
+    public void changeGuessRange(Player player) {
+        int guessNum = player.getLastGuessesNum();
+        String str = guessNumberCompareWithHiddenNumber(guessNum, hiddenNumber);
+        displayGuessingInformation(str);
+        switch (str) {
+        case "BIGGER":
+            setRangeMax(guessNum);
+            break;
+        case "SMALLER":
+            setRangeMin(guessNum);
+            break;
+        }
+    }
+
+    /**
+     * 显示玩家�?猜数和隐藏数的大小比较信�?
+     * 
+     * @param string
+     */
+    public void displayGuessingInformation(String string) {
+        switch (string) {
+        case "BIGGER":
+            System.out.println("Guessing is a little BIG!");
+            break;
+        case "SMALLER":
+            System.out.println("Guessing is a little SMALL!");
+            break;
+        }
+    }
+
+    public void setRangeMin(int rangeMin) {
+        this.rangeMin = rangeMin;
+    }
+
+    public void setRangeMax(int rangeMax) {
+        this.rangeMax = rangeMax;
+    }
+
+    /**
+     * 输入玩家姓名方法
+     * 
+     * @return String playerName or 错误信息
+     */
+    public String indicatePlayersNameImpl() {
+        Scanner input = new Scanner(System.in);
+        String playerName = input.nextLine();
+        if (isName(playerName) && isExistSpaceInString(playerName))
+            return playerName;
+        else {
+            return "ERROR_INVILD_PLAYERNAME";
+        }
+    }
+
+    /**
+     * 人类玩家输入数字具体方法
+     * 
+     * @return guessNumber
+     */
+    public int humanPlayerInputNumberImpl(int rangeMin, int rangeMax)
+    {
+        int guessNum = 0;
+        Scanner input = new Scanner(System.in);
+        System.out.print("* Please enter the number your guess:");
+        try{
+            guessNum = input.nextInt();
+            if (isNumBelongInVaildRange(guessNum))
+            {
+                System.out.println("% Please input the vaild number ONLY between 1 and 100 ! ! !");
+                humanPlayerInputNumberImpl(rangeMin, rangeMax);
+            }
+        } catch(Exception e) {
+            System.out.println("% Please input Number ONLY ! ! !");
+            humanPlayerInputNumberImpl(rangeMin, rangeMax);
+        }
+        switch(guessNum){
+        case 999:
+            abandonRound(humanPlayer);
+            break;
+        default:
+            if (isNumBelongInVaildRange(guessNum, rangeMin, rangeMax))  //判断数字是否在合法范围内
+                return guessNum;
+            else
+            {
+                System.out.println("* The number you inputed is not in vaild range! You don't have another chance to try in this round!");
+                return humanPlayer.getLastGuessesNum();
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * 模拟电脑玩家输入数字具体方法
+     * 
+     * @return guessNumber
+     */
+    public int computerPlayerInputNumberImpl(int rangeMin, int rangeMax) {
+        int guessNum = 0;
+        int abandonNum = randomNumber.createNewRandomNumber(20);
+        if (abandonNum == computerPlayer.getComputerAbandonNum())
+        {
+            abandonRound(computerPlayer);
+            return 0;
+        } else {
+            while (true) {
+                int random = randomNumber.createNewRandomNumber(rangeMax);
+                if (random >= rangeMin) {
+                    guessNum = random;
+                    break;
+                }
+            }
+            return guessNum;
+        }
+    }
+
+    /**
+     * 判断输入数字是否和隐藏数相等
+     * 
+     * @param int guessNumber
+     * @param int hiddenNumber
+     * @return 正确与否
+     */
+    public boolean guessNumberImpl(int guessNumber, int hiddenNumber) {
+        if (isNumberEqual(guessNumber, hiddenNumber))
+            return true;
+        else
+            return false;
+    }
+
+    /**
+     * 计算猜对数字时的分数 只有�?个玩家加分，另一个玩家不加分
+     * 
+     * @param player
+     */
+    public void calScore(Player player) {
+        switch (attemptTimes) {
+        case 1:
+            player.setScore(20);
+			break;
+		case 2:
+			player.setScore(15);
+			break;
+		case 3:
+			player.setScore(11);
+			break;
+		case 4:
+			player.setScore(8);
+			break;
+		case 5:
+			player.setScore(6);
+			break;
+		case 6:
+			player.setScore(5);
+			break;
+		}
+	}
+
+	/**
+	 * 计算每局结束时的分数 判断两个玩家�?后猜数和隐藏数的距离，并分别算分
+	 * 
+	 * @param humanPlayer
+	 * @param computerPlayer
+	 */
+	public void calEndRoundScore(Player humanPlayer, Player computerPlayer) {
+		ArrayList<Player> playerList = new ArrayList<Player>();
+		playerList.add(humanPlayer);
+		playerList.add(computerPlayer);
+		for (Player i : playerList) {
+			int tempNum = Math.abs(i.getLastGuessesNum() - hiddenNumber);
+			if (10 - tempNum > 0)
+				i.setScore(10 - tempNum);
+		}
+	}
+
+	/**
+	 * 人类玩家猜数步骤
+	 */
+	public void guessingStepOfHumanPlayer() {
+		// 输入数字
+		System.out.println("Now is " + humanPlayer.getPlayerName() + "'s trun");
+		humanPlayerInputNumber();
+		guessNumber(humanPlayer);
+	}
+
+	/**
+	 * 电脑玩家猜数步骤
+	 */
+	public void guessingStepOfComputerPlayer() {
+		// 输入数字
+		System.out.println("Now is " + computerPlayer.getPlayerName() + "'s trun");
+		computerPlayerInputNumber();
+		guessNumber(computerPlayer);
+	}
+
+	/**
+	 * 显示每轮游戏结束的时候的信息
+	 */
+	public void displayEndingOfRound() {
+		System.out.println("* This round is OVER!!!");
+		System.out.println("* The round totally ran " + attemptTimes + " times");
+		System.out.println("* The score of " + humanPlayer.getPlayerName() + " is " + humanPlayer.getScore());
+		System.out.println("* The score of " + computerPlayer.getPlayerName() + " is " + computerPlayer.getScore());
+		System.out.println("* The hidden number is " + hiddenNumber);
+	}
+
+	/**
+	 * 显示游戏结束的时候的信息
+	 */
+	public void displayEndingOfGame() {
+		System.out.println("* GAME OVER!");
+		System.out.println("* The total score of " + humanPlayer.getPlayerName() + " is " + humanPlayer.getScore());
+		System.out.println("* The total score of " + computerPlayer.getPlayerName() + " is " + computerPlayer.getScore());
+		Player winner = ifWinner(humanPlayer, computerPlayer);
+		if(!winner.equals(null))
+			System.out.println("*\n *\n * The WINNER is " + winner.getPlayerName() + "!!!");
+		else
+			System.out.println("*\n *\n * It is tie...");
+	}
+
+	/**
+	 * 玩家放弃该局游戏的操�?
+	 * 
+     * @param player
+     */
+	public Player abandonRound(Player player) {
+		System.out.println("* " + player.getPlayerName() + " has abandon this round");
+		// 返回�?
+		return null;
+	}
+	
+	/**
+	 * �?查String中是否有空格
+	 * 
+	 * @param string
+	 * @return boolean
+	 */
+    public boolean isExistSpaceInString (String string){
+    	for(int i = 0; i < string.length();i++){
+    		if (string.substring(i, i+1).equals(" "))
+    			return false;
+    	}
+    	return true;
+    }
+	
+    /**
+     * 判断名字长度合法�?
+     * 
+     * @param name
+     * @return boolean
+     */
+    public boolean isName(String name)
+    {
+        if (name.length() >= 1 && name.length() <= 8)
+            return true;
+        else
+        	return false;
+    }
+    
+    /**
+     * 判断猜数和隐藏数是否相等
+     * 
+     * @param guessingNumber
+     * @param hiddenNumber
+     * @return boolean
+     */
+    public boolean isNumberEqual(int guessingNumber, int hiddenNumber)
+    {
+    	if (guessingNumber == hiddenNumber)
+    		return true;
+    	else
+    		return false;
+    }
+    
+    /**
+     * 判断数字是否在合法数值内
+     * @param guessNum
+     * @return boolean
+     */
+    public boolean isNumBelongInVaildRange(int guessNum, int rangeMin, int rangeMax)
+    {
+    	if (guessNum >= rangeMin && guessNum <= rangeMax)
+    		return true;
+    	else
+    		return false;
+    }
+    
+    /**
+     * 判断数字是否�?1-100之间
+     * @param guessNum
+     * @return
+     */
+    public boolean isNumBelongInVaildRange(int guessNum)
+    {
+    	if (guessNum > 1 && guessNum < 100)
+    		return true;
+    	else
+    		return false;
+    }
+    
+    /**
+     * 判断�?猜数和隐藏数大小
+     * @param guessNum
+     * @param hiddenNum
+     * @return String
+     */
+    public String guessNumberCompareWithHiddenNumber(int guessNum, int hiddenNum)
+    {
+    	if(guessNum - hiddenNum < 0)
+    		return "BIGGER";
+    	else
+    		return "SMALLER";
+    }
+    
+    /**
+     * 判断人类玩家是否放弃该局
+     * @param humanInput
+     * @return boolean
+     */
+    public boolean isHumanPlayerAbandonRound(int humanInput)
+    {
+    	if (humanInput == 999)
+    		return true;
+    	else
+    		return false;
+    }
+    
+    /**
+     * 判断电脑玩家是否放弃该局
+     * @param computerPlayer
+     * @param abandonNum
+     * @return boolean
+     */
+    public boolean isComputerPlayerAbandonRound(Computer computerPlayer, int abandonNum)
+    {
+    	if (computerPlayer.getComputerAbandonNum() == abandonNum)
+    		return true;
+    	else
+    		return false;
+    }
+    
+    /**
+     * 根据玩家分数决定谁是赢家
+     * @param humanPlayer
+     * @param computerPlayer
+     * @return
+     */
+    public Player ifWinner(Player humanPlayer, Player computerPlayer)
+    {
+    	int tempScore = humanPlayer.getScore() - computerPlayer.getScore();
+    	if (tempScore < 0)
+	    {
+    		return computerPlayer;
+	    }else if (tempScore == 0){
+	    	return null;
+	    }else{
+	    	return humanPlayer;
+	    }
+    }
+    
+    public void displayBar()
+    {
+        System.out.println("===================================================");
+    }
+    
+    /**
+     * 游戏入口
+     */
+    public void startTheGame(){
+    	displayWelcomScreen();
+    	indicatePlayersName();
+    	for(int roundNum = 1; roundNum < 5; roundNum++){
+    	    displayBar();
+    	    System.out.println("This is round " + roundNum + " out of 4");
+    	    displayBar();
+    	    createHiddenNumber(100);
+    	    createOrderNumber(2);
+    	    chooseOrderForPlayers();
+    	    
+    	}
+    }
+
+}
